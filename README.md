@@ -20,7 +20,7 @@ I'm on an exciting tech journey. Starting in 2022, I've been learning web develo
 
 [![GitHub Streak](https://streak-stats.demolab.com/?user=divineamunega)](https://git.io/streak-stats)
 
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=divineamunega)](https://github.com/divineamunega/github-readme-stats)
+[![GitHub Streak](https://nirzak-streak-stats.vercel.app?user=divineamunega&theme=dark)](https://git.io/streak-stats)
 
 <p>
 Hello you.... again. It was nice meeting you. (I did not get to meet you) But anyways you can contact me below. 
