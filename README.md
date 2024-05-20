@@ -18,7 +18,7 @@ I'm on an exciting tech journey. Starting in 2022, I've been learning web develo
 
 ![Github Stats](https://github-readme-stats.vercel.app/api?username=divineamunega)
 
-[![GitHub Streak](https://streak-stats.demolab.com/?user=divineamunega)](https://git.io/streak-stats)
+
 
 [![GitHub Streak](https://nirzak-streak-stats.vercel.app?user=divineamunega&theme=dark)](https://git.io/streak-stats)
 
