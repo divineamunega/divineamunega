@@ -24,10 +24,7 @@ I'm on an exciting tech journey. Starting in 2022, I've been learning web develo
 
 <p>
 Hello you.... again. It was nice meeting you. (I did not get to meet you) But anyways you can contact me below. 
-<br>
-This is also one of my best games😅😅 
-Byeee for now.
-<br>
+
 <br>
 
 <a href='https://x.com/divinamunega'>
@@ -37,7 +34,5 @@ Byeee for now.
 <a href='https://www.linkedin.com/in/divine-amunega-111ss/'>
 <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white">
 </a>
-<img src ="./jump.gif">
-</p>
 
 ![Visitor Count](https://profile-counter.glitch.me/divineamunega/count.svg)
