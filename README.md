@@ -8,11 +8,11 @@
 
 - 🌱 I’m currently learning **anything/everything about computers**
 
-- 💬 Ask me about **javascript, python, C, computers**
+- 💬 Ask me about **javascript, python, Computers?**
 
-- 📫 How to reach me **divineamunega@gmail.com**
+- 📫 How to reach me **on X @div_x_**
 
-- ⚡ Fun fact **I will go into web3 development soon**
+- ⚡ Fun fact **I know stuff**
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
