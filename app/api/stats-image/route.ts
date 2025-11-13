@@ -18,9 +18,8 @@ export async function GET(request: NextRequest) {
 			// Use serverless Chromium on Vercel
 			browser = await puppeteer.launch({
 				args: chromium.args,
-				defaultViewport: chromium.defaultViewport,
 				executablePath: await chromium.executablePath(),
-				headless: chromium.headless,
+				headless: true,
 			});
 		} else {
 			// Use local Chromium in development
