@@ -67,7 +67,12 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add github-stats.png
+
+          # Update README with cache-busting timestamp
+          TIMESTAMP=$(date +%s)
+          sed -i "s|github-stats\.png.*)|github-stats.png?t=${TIMESTAMP})|g" README.md
+
+          git add github-stats.png README.md
           git commit -m "Update GitHub stats screenshot
 
           🤖 Auto-generated on $(date -u +'%Y-%m-%d %H:%M:%S UTC')
