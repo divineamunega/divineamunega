@@ -27,9 +27,12 @@
    In your Vercel project settings, add:
    - `GITHUB_TOKEN` - Your GitHub Personal Access Token
 
-6. **Commit and push the README update**:
+6. **Update the cache warming workflow**:
+   Edit `.github/workflows/warm-cache.yml` and replace `your-app-name.vercel.app` with your actual Vercel URL.
+
+7. **Commit and push all updates**:
    ```bash
-   git add README.md
+   git add README.md .github/workflows/warm-cache.yml
    git commit -m "Update stats image URL with Vercel deployment"
    git push
    ```
@@ -38,8 +41,24 @@
 
 - The `/api/stats-image` endpoint dynamically generates a screenshot of your stats page using Puppeteer
 - Images are cached for 1 hour (3600 seconds) by CDNs
-- No GitHub Actions needed - the image is generated on-demand
+- A GitHub Action runs daily at 00:00 UTC to warm the cache (optional but recommended)
 - First load takes ~15-20 seconds, subsequent loads are instant (cached)
+
+## Cache Warming
+
+The `.github/workflows/warm-cache.yml` workflow:
+- Runs automatically every day at 00:00 UTC (midnight)
+- Sends a GET request to your stats image endpoint
+- Pre-generates the screenshot so it's cached when visitors view your profile
+- Can be triggered manually via the "Actions" tab on GitHub
+
+**To change the schedule**: Edit the cron expression in `warm-cache.yml`:
+```yaml
+# Examples:
+- cron: '0 0 * * *'   # Daily at 00:00 UTC
+- cron: '0 12 * * *'  # Daily at 12:00 UTC (noon)
+- cron: '0 */6 * * *' # Every 6 hours
+```
 
 ## Troubleshooting
 

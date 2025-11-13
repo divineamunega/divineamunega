@@ -1,0 +1,37 @@
+name: Warm Image Cache
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC (adjust to your preferred time)
+    # Format: minute hour day month day-of-week
+    - cron: "0 0 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  warm-cache:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send GET request to stats image endpoint
+        run: |
+          echo "🔥 Warming cache for stats image..."
+
+          # Replace with your actual Vercel URL after deployment
+          URL="https://divineamunega.vercel.app/api/stats-image"
+
+          # Send GET request and follow redirects
+          response=$(curl -L -w "\n%{http_code}" -s "$URL" -o /dev/null)
+          http_code=$(echo "$response" | tail -n1)
+
+          echo "📊 Response code: $http_code"
+
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ Cache warmed successfully!"
+          else
+            echo "⚠️ Unexpected response code: $http_code"
+            exit 1
+          fi
+
+      - name: Log completion
+        run: |
+          echo "🎉 Cache warming complete at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
