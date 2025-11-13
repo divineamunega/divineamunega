@@ -18,10 +18,10 @@ async function captureScreenshot() {
   try {
     const page = await browser.newPage();
 
-    // Set viewport to a standard desktop size
+    // Set viewport to match GitHub profile README dimensions (wider aspect ratio)
     await page.setViewport({
       width: 1280,
-      height: 800,
+      height: 640,
       deviceScaleFactor: 2 // For higher quality/retina display
     });
 
