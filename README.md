@@ -1,6 +1,10 @@
-# Next.js + TypeScript + Tailwind CSS
+# GitHub Stats Dashboard
 
-This is a GitHub stats dashboard built with Next.js, TypeScript, and Tailwind CSS.
+![GitHub Stats](github-stats.png)
+
+A beautiful, real-time GitHub stats dashboard built with Next.js, TypeScript, and Tailwind CSS.
+
+*Auto-updated daily with the latest stats*
 
 ## Getting Started
 

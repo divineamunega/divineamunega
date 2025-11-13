@@ -6,7 +6,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"screenshot": "node scripts/screenshot.js"
 	},
 	"dependencies": {
 		"@octokit/rest": "^22.0.1",
@@ -25,6 +26,7 @@
 		"autoprefixer": "^10.4.17",
 		"eslint": "^9.39.1",
 		"eslint-config-next": "^15.1.0",
+		"puppeteer": "^24.30.0",
 		"typescript": "~5.9.3"
 	}
 }

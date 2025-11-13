@@ -1,0 +1,76 @@
+name: Update GitHub Stats
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC (adjust to your preferred time)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Chrome for Puppeteer
+        run: npx puppeteer browsers install chrome
+
+      - name: Start Next.js server
+        run: pnpm dev &
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Wait for server to be ready
+        run: |
+          echo "⏳ Waiting for server to start..."
+          timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null; do sleep 2; done' || exit 1
+          echo "✅ Server is ready!"
+
+      - name: Generate screenshot
+        run: pnpm screenshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if screenshot changed
+        id: check_changes
+        run: |
+          git add github-stats.png
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "📊 No changes in stats"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "✨ Stats updated!"
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add github-stats.png
+          git commit -m "Update GitHub stats screenshot
+
+          🤖 Auto-generated on $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+
+          Co-Authored-By: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          git push
+
+      - name: No changes detected
+        if: steps.check_changes.outputs.changed == 'false'
+        run: echo "📊 Stats are up to date, no commit needed"
