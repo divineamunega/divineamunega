@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -10,16 +11,32 @@ export async function GET(request: NextRequest) {
 	try {
 		console.log("🚀 Launching browser for screenshot...");
 
-		browser = await puppeteer.launch({
-			headless: true,
-			args: [
-				"--no-sandbox",
-				"--disable-setuid-sandbox",
-				"--disable-dev-shm-usage",
-				"--disable-accelerated-2d-canvas",
-				"--disable-gpu",
-			],
-		});
+		// Determine if we're in production (Vercel) or local development
+		const isProduction = process.env.NODE_ENV === "production";
+
+		if (isProduction) {
+			// Use serverless Chromium on Vercel
+			browser = await puppeteer.launch({
+				args: chromium.args,
+				defaultViewport: chromium.defaultViewport,
+				executablePath: await chromium.executablePath(),
+				headless: chromium.headless,
+			});
+		} else {
+			// Use local Chromium in development
+			// You'll need to install Chrome locally: npx puppeteer browsers install chrome
+			const puppeteerLocal = await import("puppeteer");
+			browser = await puppeteerLocal.default.launch({
+				headless: true,
+				args: [
+					"--no-sandbox",
+					"--disable-setuid-sandbox",
+					"--disable-dev-shm-usage",
+					"--disable-accelerated-2d-canvas",
+					"--disable-gpu",
+				],
+			});
+		}
 
 		const page = await browser.newPage();
 
