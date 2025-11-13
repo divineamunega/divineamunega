@@ -54,17 +54,17 @@ export async function GET(request: NextRequest) {
 		console.log(`📡 Navigating to ${url}...`);
 
 		await page.goto(url, {
-			waitUntil: "networkidle0",
-			timeout: 30000,
+			waitUntil: "domcontentloaded", // Faster than networkidle0
+			timeout: 25000,
 		});
 
 		console.log("⏳ Waiting for content to load...");
 
 		// Wait for the main content
-		await page.waitForSelector(".max-w-4xl", { timeout: 10000 });
+		await page.waitForSelector(".max-w-4xl", { timeout: 8000 });
 
-		// Wait for animations
-		await new Promise((resolve) => setTimeout(resolve, 2000));
+		// Shorter wait for animations (reduce from 2s to 1s)
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		console.log("📸 Taking screenshot...");
 
@@ -75,11 +75,13 @@ export async function GET(request: NextRequest) {
 		if (element) {
 			screenshot = (await element.screenshot({
 				type: "png",
+				optimizeForSpeed: true,
 			})) as Buffer;
 		} else {
 			screenshot = (await page.screenshot({
 				fullPage: true,
 				type: "png",
+				optimizeForSpeed: true,
 			})) as Buffer;
 		}
 
