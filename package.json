@@ -6,8 +6,7 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint",
-		"screenshot": "node scripts/screenshot.js"
+		"lint": "next lint"
 	},
 	"dependencies": {
 		"@octokit/rest": "^22.0.1",

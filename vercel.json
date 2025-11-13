@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "app/api/stats-image/route.ts": {
+      "maxDuration": 30
+    }
+  }
+}

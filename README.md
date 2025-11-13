@@ -1,1 +1,1 @@
-![GitHub Stats](github-stats.png)
+![GitHub Stats](https://your-app-name.vercel.app/api/stats-image)
