@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/rest";
+import axios from "axios";
 
 export interface GitHubStats {
 	username: string;
@@ -20,6 +21,17 @@ export interface GitHubStats {
 	totalRepos: string;
 	totalStars: string;
 	contributionsThisYear: string;
+	profileViews: string;
+	wakatime?: WakaTimeStats;
+}
+
+export interface WakaTimeStats {
+	dailyAverage: string;
+	totalHours: string;
+	topLanguage: string;
+	topLanguagePercent: string;
+	editors: string[];
+	bestDay: string;
 }
 
 interface ContributionDay {
@@ -31,10 +43,14 @@ const octokit = new Octokit({
 	auth: process.env.GITHUB_TOKEN,
 });
 
-export async function fetchGitHubStats(
-	username: string
-): Promise<GitHubStats> {
+// Simple in-memory profile view counter (resets on server restart)
+// For production, use a database or external service
+let profileViewCount = 0;
+
+export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
 	try {
+		// Increment profile view counter
+		profileViewCount++;
 		// Fetch user data
 		const { data: user } = await octokit.users.getByUsername({ username });
 
@@ -84,8 +100,12 @@ export async function fetchGitHubStats(
 		} = await calculateStreaksAndStats(contributionData, repos, username);
 
 		// Calculate experience (years since account creation)
-		const accountAge = new Date().getFullYear() - new Date(user.created_at!).getFullYear();
+		const accountAge =
+			new Date().getFullYear() - new Date(user.created_at!).getFullYear();
 		const experience = accountAge > 0 ? `${accountAge}+ years` : "< 1 year";
+
+		// Fetch WakaTime stats if API key is available
+		const wakatime = await fetchWakaTimeStats(username);
 
 		return {
 			username: user.login,
@@ -107,11 +127,87 @@ export async function fetchGitHubStats(
 			totalRepos: user.public_repos.toString(),
 			totalStars: totalStars.toLocaleString(),
 			contributionsThisYear: totalContributions.toLocaleString(),
+			profileViews: profileViewCount.toLocaleString(),
+			wakatime,
 		};
 	} catch (error) {
 		console.error("Error fetching GitHub stats:", error);
 		// Return fallback data
 		return getFallbackStats(username);
+	}
+}
+
+async function fetchWakaTimeStats(
+	username: string
+): Promise<WakaTimeStats | undefined> {
+	const apiKey = process.env.WAKATIME_API_KEY;
+
+	if (!apiKey || apiKey === "your_wakatime_api_key_here") {
+		return undefined;
+	}
+
+	try {
+		const response = await axios.get(
+			`https://wakatime.com/api/v1/users/current/stats/last_7_days`,
+			{
+				params: { api_key: apiKey },
+				timeout: 10000,
+			}
+		);
+
+		if (!response.data || !response.data.data) {
+			return undefined;
+		}
+
+		const stats = response.data.data;
+
+		// Get daily average in hours
+		const dailyAverage = (
+			stats.daily_average_including_other_language / 3600
+		).toFixed(1);
+
+		// Get total hours
+		const totalHours = (
+			stats.total_seconds_including_other_language / 3600
+		).toFixed(1);
+
+		// Get top language
+		const topLanguage = stats.languages?.[0]?.name || "N/A";
+		const topLanguagePercent = stats.languages?.[0]?.percent?.toFixed(1) || "0";
+
+		// Get editors
+		const editors = stats.editors?.slice(0, 3).map((e: any) => e.name) || [];
+
+		// Get best day
+		const bestDayData = stats.best_day;
+		const bestDay = bestDayData
+			? new Date(bestDayData.date).toLocaleDateString("en-US", {
+					month: "short",
+					day: "numeric",
+			  })
+			: "N/A";
+
+		return {
+			dailyAverage: `${dailyAverage} hrs`,
+			totalHours: `${totalHours} hrs`,
+			topLanguage,
+			topLanguagePercent: `${topLanguagePercent}%`,
+			editors,
+			bestDay,
+		};
+	} catch (error) {
+		// Silently fail - WakaTime stats are optional
+		if (axios.isAxiosError(error)) {
+			console.error(error);
+			console.error(
+				"WakaTime API error:",
+				error.response?.status,
+				error.message
+			);
+		} else if (error instanceof Error) {
+			console.error("WakaTime error:", error.message);
+		}
+		return undefined;
 	}
 }
 
@@ -172,7 +268,7 @@ async function calculateStreaksAndStats(
 
 	// Create a map for quick date lookup
 	const contributionMap = new Map<string, number>();
-	contributions.forEach(day => {
+	contributions.forEach((day) => {
 		contributionMap.set(day.date, day.count);
 	});
 
@@ -181,7 +277,7 @@ async function calculateStreaksAndStats(
 	checkDate.setDate(checkDate.getDate() - 1);
 
 	while (true) {
-		const dateStr = checkDate.toISOString().split('T')[0];
+		const dateStr = checkDate.toISOString().split("T")[0];
 		const count = contributionMap.get(dateStr);
 
 		if (count && count > 0) {
@@ -198,7 +294,8 @@ async function calculateStreaksAndStats(
 		const dayOfWeek = new Date(day.date).toLocaleDateString("en-US", {
 			weekday: "long",
 		});
-		dayContributions[dayOfWeek] = (dayContributions[dayOfWeek] || 0) + day.count;
+		dayContributions[dayOfWeek] =
+			(dayContributions[dayOfWeek] || 0) + day.count;
 	});
 
 	let mostCommitDay = "N/A";
@@ -278,9 +375,12 @@ async function calculateStreaksAndStats(
 	} catch (error) {
 		console.error("Error fetching commit counts:", error);
 		// Fallback to most recently pushed repo
-		const fallbackRepo = repos.filter(r => r.pushed_at).sort((a, b) =>
-			new Date(b.pushed_at!).getTime() - new Date(a.pushed_at!).getTime()
-		)[0];
+		const fallbackRepo = repos
+			.filter((r) => r.pushed_at)
+			.sort(
+				(a, b) =>
+					new Date(b.pushed_at!).getTime() - new Date(a.pushed_at!).getTime()
+			)[0];
 		if (fallbackRepo) {
 			mostCommitProject = fallbackRepo.name;
 			mostCommitProjectCount = 0;
@@ -301,6 +401,7 @@ async function calculateStreaksAndStats(
 }
 
 function getFallbackStats(username: string): GitHubStats {
+	profileViewCount++;
 	return {
 		username,
 		fullName: username,
@@ -321,5 +422,7 @@ function getFallbackStats(username: string): GitHubStats {
 		totalRepos: "N/A",
 		totalStars: "N/A",
 		contributionsThisYear: "N/A",
+		profileViews: profileViewCount.toLocaleString(),
+		wakatime: undefined,
 	};
 }

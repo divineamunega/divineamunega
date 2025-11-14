@@ -8,9 +8,10 @@ export async function GET() {
 	try {
 		const stats = await fetchGitHubStats("divineamunega");
 
-		// Generate SVG directly
+		// Generate SVG directly - adjust height based on whether WakaTime is available
+		const svgHeight = stats.wakatime ? 1300 : 1100;
 		const svg = `
-<svg width="800" height="1100" xmlns="http://www.w3.org/2000/svg">
+<svg width="800" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
@@ -23,11 +24,12 @@ export async function GET() {
   </defs>
 
   <!-- Background -->
-  <rect width="800" height="1100" fill="url(#bgGradient)"/>
+  <rect width="800" height="${svgHeight}" fill="url(#bgGradient)"/>
 
   <!-- Header -->
   <text x="40" y="70" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="#ffffff" letter-spacing="-0.5">${stats.fullName}</text>
   <text x="40" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#666666">@${stats.username} • ${stats.experience} experience</text>
+  <text x="760" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#666666" text-anchor="end">👁️ ${stats.profileViews} views</text>
   <line x1="40" y1="120" x2="760" y2="120" stroke="#1a1a1a" stroke-width="2"/>
 
   <!-- Bio -->
@@ -92,10 +94,36 @@ export async function GET() {
   <text x="${x + 67.5}" y="${y + 25}" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500" fill="#cccccc" text-anchor="middle">${lang}</text>`;
 	}).join('\n  ')}
 
+  ${stats.wakatime ? `
+  <!-- WakaTime Stats (Last 7 Days) -->
+  <text x="40" y="975" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#666666" letter-spacing="1">WAKATIME STATS (LAST 7 DAYS)</text>
+
+  <rect x="40" y="995" width="720" height="180" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1"/>
+
+  <!-- Daily Average & Total Hours -->
+  <text x="64" y="1025" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Daily Average</text>
+  <text x="64" y="1055" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${stats.wakatime.dailyAverage}</text>
+
+  <text x="264" y="1025" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Total Coding Time</text>
+  <text x="264" y="1055" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${stats.wakatime.totalHours}</text>
+
+  <text x="490" y="1025" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Best Day</text>
+  <text x="490" y="1055" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${stats.wakatime.bestDay}</text>
+
+  <!-- Top Language & Editors -->
+  <line x1="64" y1="1085" x2="736" y2="1085" stroke="#1a1a1a" stroke-width="1"/>
+
+  <text x="64" y="1110" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Top Language</text>
+  <text x="64" y="1140" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#ffffff">${stats.wakatime.topLanguage} <tspan fill="#666666">${stats.wakatime.topLanguagePercent}</tspan></text>
+
+  <text x="400" y="1110" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Editors Used</text>
+  <text x="400" y="1140" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#ffffff">${stats.wakatime.editors.join(', ') || 'N/A'}</text>
+  ` : ''}
+
   <!-- Footer -->
-  <line x1="40" y1="1020" x2="760" y2="1020" stroke="#1a1a1a" stroke-width="1"/>
-  <text x="40" y="1050" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444">github.com/${stats.username}</text>
-  <text x="760" y="1050" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444" text-anchor="end">Updated ${new Date().toLocaleDateString()}</text>
+  <line x1="40" y1="${stats.wakatime ? 1220 : 1020}" x2="760" y2="${stats.wakatime ? 1220 : 1020}" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="40" y="${stats.wakatime ? 1250 : 1050}" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444">github.com/${stats.username}</text>
+  <text x="760" y="${stats.wakatime ? 1250 : 1050}" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444" text-anchor="end">Updated ${new Date().toLocaleDateString()}</text>
 </svg>
     `.trim();
 
