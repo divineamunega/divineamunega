@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { fetchGitHubStats } from "@/lib/github";
-import satori from "satori";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -9,360 +8,96 @@ export async function GET() {
 	try {
 		const stats = await fetchGitHubStats("divineamunega");
 
-		// Sleek black design with experienced dev aesthetic
-		const markup = (
-			<div
-				style={{
-					width: "100%",
-					height: "100%",
-					display: "flex",
-					background: "#0a0a0a",
-					padding: "0",
-				}}
-			>
-				<div
-					style={{
-						width: "100%",
-						background: "linear-gradient(135deg, #000000 0%, #0a0a0a 100%)",
-						display: "flex",
-						flexDirection: "column",
-						padding: "40px",
-						gap: "28px",
-					}}
-				>
-					{/* Header - Minimalist */}
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							gap: "12px",
-							borderBottom: "2px solid #1a1a1a",
-							paddingBottom: "20px",
-						}}
-					>
-						<div
-							style={{
-								fontSize: "32px",
-								fontWeight: "700",
-								color: "#ffffff",
-								letterSpacing: "-0.5px",
-							}}
-						>
-							{stats.fullName}
-						</div>
-						<div
-							style={{
-								fontSize: "16px",
-								color: "#666666",
-								display: "flex",
-								gap: "16px",
-							}}
-						>
-							<span>@{stats.username}</span>
-							<span>•</span>
-							<span>{stats.experience} experience</span>
-						</div>
-					</div>
+		// Generate SVG directly
+		const svg = `
+<svg width="800" height="1100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="streakGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0f0f;stop-opacity:1" />
+    </linearGradient>
+  </defs>
 
-					{/* Bio */}
-					<div
-						style={{
-							fontSize: "18px",
-							color: "#999999",
-							lineHeight: "1.6",
-							fontStyle: "italic",
-						}}
-					>
-						&ldquo;{stats.bio}&rdquo;
-					</div>
+  <!-- Background -->
+  <rect width="800" height="1100" fill="url(#bgGradient)"/>
 
-					{/* Main Stats Grid */}
-					<div
-						style={{
-							display: "flex",
-							gap: "20px",
-						}}
-					>
-						{/* Commits */}
-						<div
-							style={{
-								flex: 1,
-								background: "#111111",
-								border: "1px solid #1f1f1f",
-								borderRadius: "8px",
-								padding: "24px",
-								display: "flex",
-								flexDirection: "column",
-								gap: "12px",
-							}}
-						>
-							<div style={{ fontSize: "13px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
-								COMMITS
-							</div>
-							<div style={{ fontSize: "36px", fontWeight: "700", color: "#ffffff" }}>
-								{stats.totalCommits}
-							</div>
-						</div>
+  <!-- Header -->
+  <text x="40" y="70" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="#ffffff" letter-spacing="-0.5">${stats.fullName}</text>
+  <text x="40" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#666666">@${stats.username} • ${stats.experience} experience</text>
+  <line x1="40" y1="120" x2="760" y2="120" stroke="#1a1a1a" stroke-width="2"/>
 
-						{/* Repos */}
-						<div
-							style={{
-								flex: 1,
-								background: "#111111",
-								border: "1px solid #1f1f1f",
-								borderRadius: "8px",
-								padding: "24px",
-								display: "flex",
-								flexDirection: "column",
-								gap: "12px",
-							}}
-						>
-							<div style={{ fontSize: "13px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
-								REPOS
-							</div>
-							<div style={{ fontSize: "36px", fontWeight: "700", color: "#ffffff" }}>
-								{stats.totalRepos}
-							</div>
-						</div>
+  <!-- Bio -->
+  <text x="40" y="165" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#999999" font-style="italic">"${stats.bio}"</text>
 
-						{/* Stars */}
-						<div
-							style={{
-								flex: 1,
-								background: "#111111",
-								border: "1px solid #1f1f1f",
-								borderRadius: "8px",
-								padding: "24px",
-								display: "flex",
-								flexDirection: "column",
-								gap: "12px",
-							}}
-						>
-							<div style={{ fontSize: "13px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
-								STARS
-							</div>
-							<div style={{ fontSize: "36px", fontWeight: "700", color: "#ffffff" }}>
-								{stats.totalStars}
-							</div>
-						</div>
-					</div>
+  <!-- Main Stats Cards -->
+  <!-- Commits -->
+  <rect x="40" y="210" width="226" height="100" rx="8" fill="#111111" stroke="#1f1f1f" stroke-width="1"/>
+  <text x="64" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#666666" letter-spacing="1">COMMITS</text>
+  <text x="64" y="275" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="700" fill="#ffffff">${stats.totalCommits}</text>
 
-					{/* Streaks */}
-					<div
-						style={{
-							display: "flex",
-							gap: "20px",
-						}}
-					>
-						<div
-							style={{
-								flex: 1,
-								background: "linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%)",
-								border: "1px solid #2a2a2a",
-								borderRadius: "8px",
-								padding: "24px",
-								display: "flex",
-								flexDirection: "column",
-								gap: "8px",
-							}}
-						>
-							<div style={{ fontSize: "13px", color: "#888888" }}>
-								🔥 Current Streak
-							</div>
-							<div style={{ fontSize: "32px", fontWeight: "700", color: "#ffffff" }}>
-								{stats.currentStreak}
-							</div>
-						</div>
+  <!-- Repos -->
+  <rect x="287" y="210" width="226" height="100" rx="8" fill="#111111" stroke="#1f1f1f" stroke-width="1"/>
+  <text x="311" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#666666" letter-spacing="1">REPOS</text>
+  <text x="311" y="275" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="700" fill="#ffffff">${stats.totalRepos}</text>
 
-						<div
-							style={{
-								flex: 1,
-								background: "linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%)",
-								border: "1px solid #2a2a2a",
-								borderRadius: "8px",
-								padding: "24px",
-								display: "flex",
-								flexDirection: "column",
-								gap: "8px",
-							}}
-						>
-							<div style={{ fontSize: "13px", color: "#888888" }}>
-								📈 Longest Streak
-							</div>
-							<div style={{ fontSize: "32px", fontWeight: "700", color: "#ffffff" }}>
-								{stats.longestStreak}
-							</div>
-						</div>
-					</div>
+  <!-- Stars -->
+  <rect x="534" y="210" width="226" height="100" rx="8" fill="#111111" stroke="#1f1f1f" stroke-width="1"/>
+  <text x="558" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#666666" letter-spacing="1">STARS</text>
+  <text x="558" y="275" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="700" fill="#ffffff">${stats.totalStars}</text>
 
-					{/* Activity Insights */}
-					<div
-						style={{
-							background: "#0d0d0d",
-							border: "1px solid #1a1a1a",
-							borderRadius: "8px",
-							padding: "24px",
-							display: "flex",
-							flexDirection: "column",
-							gap: "16px",
-						}}
-					>
-						<div style={{ fontSize: "14px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
-							ACTIVITY INSIGHTS
-						</div>
-						<div style={{ display: "flex", gap: "40px" }}>
-							<div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-								<div style={{ fontSize: "13px", color: "#888888" }}>Most Active Day</div>
-								<div style={{ fontSize: "16px", color: "#ffffff", fontWeight: "600" }}>
-									{stats.mostCommitDay}
-								</div>
-								<div style={{ fontSize: "12px", color: "#555555" }}>
-									{stats.mostCommitDayCount} commits
-								</div>
-							</div>
-							<div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-								<div style={{ fontSize: "13px", color: "#888888" }}>Peak Date</div>
-								<div style={{ fontSize: "16px", color: "#ffffff", fontWeight: "600" }}>
-									{stats.mostActiveDate.split(',')[0]}
-								</div>
-								<div style={{ fontSize: "12px", color: "#555555" }}>
-									{stats.mostActiveDateCount} commits
-								</div>
-							</div>
-						</div>
-					</div>
+  <!-- Streaks -->
+  <rect x="40" y="340" width="350" height="100" rx="8" fill="url(#streakGradient)" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="64" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">🔥 Current Streak</text>
+  <text x="64" y="415" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="#ffffff">${stats.currentStreak}</text>
 
-					{/* Notable Projects */}
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							gap: "16px",
-						}}
-					>
-						<div style={{ fontSize: "14px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
-							NOTABLE PROJECTS
-						</div>
-						<div style={{ display: "flex", gap: "20px" }}>
-							<div
-								style={{
-									flex: 1,
-									background: "#0d0d0d",
-									border: "1px solid #1a1a1a",
-									borderRadius: "6px",
-									padding: "16px",
-									display: "flex",
-									flexDirection: "column",
-									gap: "8px",
-								}}
-							>
-								<div style={{ fontSize: "12px", color: "#777777" }}>Most Commits</div>
-								<div style={{ fontSize: "16px", color: "#ffffff", fontWeight: "600" }}>
-									{stats.mostCommitProject}
-								</div>
-							</div>
-							<div
-								style={{
-									flex: 1,
-									background: "#0d0d0d",
-									border: "1px solid #1a1a1a",
-									borderRadius: "6px",
-									padding: "16px",
-									display: "flex",
-									flexDirection: "column",
-									gap: "8px",
-								}}
-							>
-								<div style={{ fontSize: "12px", color: "#777777" }}>⭐ Fan Favorite</div>
-								<div style={{ fontSize: "16px", color: "#ffffff", fontWeight: "600" }}>
-									{stats.favouriteProject}
-								</div>
-								<div style={{ fontSize: "12px", color: "#555555" }}>
-									{stats.favouriteProjectStars} stars
-								</div>
-							</div>
-						</div>
-					</div>
+  <rect x="410" y="340" width="350" height="100" rx="8" fill="url(#streakGradient)" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="434" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">📈 Longest Streak</text>
+  <text x="434" y="415" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="#ffffff">${stats.longestStreak}</text>
 
-					{/* Tech Stack */}
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							gap: "16px",
-						}}
-					>
-						<div style={{ fontSize: "14px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
-							TECH STACK
-						</div>
-						<div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-							{stats.languages.map((lang, idx) => (
-								<div
-									key={idx}
-									style={{
-										background: "#111111",
-										border: "1px solid #1f1f1f",
-										borderRadius: "6px",
-										padding: "10px 16px",
-										fontSize: "14px",
-										color: "#cccccc",
-										fontWeight: "500",
-									}}
-								>
-									{lang}
-								</div>
-							))}
-						</div>
-					</div>
+  <!-- Activity Insights -->
+  <rect x="40" y="470" width="720" height="130" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="64" y="500" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#666666" letter-spacing="1">ACTIVITY INSIGHTS</text>
 
-					{/* Footer */}
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "space-between",
-							paddingTop: "20px",
-							borderTop: "1px solid #1a1a1a",
-							fontSize: "12px",
-							color: "#444444",
-						}}
-					>
-						<span>github.com/{stats.username}</span>
-						<span>Updated {new Date().toLocaleDateString()}</span>
-					</div>
-				</div>
-			</div>
-		);
+  <text x="64" y="530" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Most Active Day</text>
+  <text x="64" y="555" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#ffffff">${stats.mostCommitDay}</text>
+  <text x="64" y="575" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#555555">${stats.mostCommitDayCount} commits</text>
 
-		const svg = await satori(markup, {
-			width: 800,
-			height: 1100,
-			fonts: [
-				{
-					name: "Inter",
-					data: await fetch(
-						"https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff"
-					).then((res) => res.arrayBuffer()),
-					weight: 400,
-					style: "normal",
-				},
-				{
-					name: "Inter",
-					data: await fetch(
-						"https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiA.woff"
-					).then((res) => res.arrayBuffer()),
-					weight: 600,
-					style: "normal",
-				},
-				{
-					name: "Inter",
-					data: await fetch(
-						"https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff"
-					).then((res) => res.arrayBuffer()),
-					weight: 700,
-					style: "normal",
-				},
-			],
-		});
+  <text x="264" y="530" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Peak Date</text>
+  <text x="264" y="555" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#ffffff">${stats.mostActiveDate.split(',')[0]}</text>
+  <text x="264" y="575" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#555555">${stats.mostActiveDateCount} commits</text>
+
+  <!-- Notable Projects -->
+  <text x="40" y="645" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#666666" letter-spacing="1">NOTABLE PROJECTS</text>
+
+  <rect x="40" y="665" width="350" height="90" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="56" y="690" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#777777">Most Commits</text>
+  <text x="56" y="720" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#ffffff">${stats.mostCommitProject}</text>
+
+  <rect x="410" y="665" width="350" height="90" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="426" y="690" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#777777">⭐ Fan Favorite</text>
+  <text x="426" y="720" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#ffffff">${stats.favouriteProject}</text>
+  <text x="426" y="740" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#555555">${stats.favouriteProjectStars} stars</text>
+
+  <!-- Tech Stack -->
+  <text x="40" y="810" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#666666" letter-spacing="1">TECH STACK</text>
+
+  ${stats.languages.map((lang, idx) => {
+		const x = 40 + (idx % 5) * 145;
+		const y = 830 + Math.floor(idx / 5) * 50;
+		return `<rect x="${x}" y="${y}" width="135" height="40" rx="6" fill="#111111" stroke="#1f1f1f" stroke-width="1"/>
+  <text x="${x + 67.5}" y="${y + 25}" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500" fill="#cccccc" text-anchor="middle">${lang}</text>`;
+	}).join('\n  ')}
+
+  <!-- Footer -->
+  <line x1="40" y1="1020" x2="760" y2="1020" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="40" y="1050" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444">github.com/${stats.username}</text>
+  <text x="760" y="1050" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444" text-anchor="end">Updated ${new Date().toLocaleDateString()}</text>
+</svg>
+    `.trim();
 
 		return new NextResponse(svg, {
 			status: 200,
