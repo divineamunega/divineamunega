@@ -54,17 +54,17 @@ export async function GET(request: NextRequest) {
 		console.log(`📡 Navigating to ${url}...`);
 
 		await page.goto(url, {
-			waitUntil: "domcontentloaded", // Faster than networkidle0
-			timeout: 25000,
+			waitUntil: "domcontentloaded",
+			timeout: 15000,
 		});
 
 		console.log("⏳ Waiting for content to load...");
 
 		// Wait for the main content
-		await page.waitForSelector(".max-w-4xl", { timeout: 8000 });
+		await page.waitForSelector(".max-w-4xl", { timeout: 5000 });
 
-		// Shorter wait for animations (reduce from 2s to 1s)
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		// Minimal wait for rendering
+		await new Promise((resolve) => setTimeout(resolve, 500));
 
 		console.log("📸 Taking screenshot...");
 
@@ -87,15 +87,14 @@ export async function GET(request: NextRequest) {
 
 		console.log("✅ Screenshot generated successfully");
 
-		// Return the image with appropriate headers
+		// Return the image with aggressive no-cache headers for GitHub
 		return new NextResponse(new Uint8Array(screenshot), {
 			status: 200,
 			headers: {
 				"Content-Type": "image/png",
-				"Cache-Control":
-					"public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
-				"CDN-Cache-Control": "public, max-age=3600",
-				"Vercel-CDN-Cache-Control": "public, max-age=3600",
+				"Cache-Control": "no-cache, no-store, must-revalidate",
+				"Pragma": "no-cache",
+				"Expires": "0",
 			},
 		});
 	} catch (error) {
