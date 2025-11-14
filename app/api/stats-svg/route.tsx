@@ -75,7 +75,7 @@ export async function GET() {
 
   <rect x="40" y="665" width="350" height="90" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1"/>
   <text x="56" y="690" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#777777">Most Commits</text>
-  <text x="56" y="720" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#ffffff">${stats.mostCommitProject}</text>
+  <text x="56" y="720" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#ffffff">${stats.mostCommitProject}${stats.mostCommitProjectCount > 0 ? ` (${stats.mostCommitProjectCount} commits)` : ''}</text>
 
   <rect x="410" y="665" width="350" height="90" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1"/>
   <text x="426" y="690" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#777777">⭐ Fan Favorite</text>

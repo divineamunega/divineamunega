@@ -12,6 +12,7 @@ export interface GitHubStats {
 	mostActiveDate: string;
 	mostActiveDateCount: number;
 	mostCommitProject: string;
+	mostCommitProjectCount: number;
 	favouriteProject: string;
 	favouriteProjectStars: number;
 	languages: string[];
@@ -79,7 +80,8 @@ export async function fetchGitHubStats(
 			mostActiveDate,
 			mostActiveDateCount,
 			mostCommitProject,
-		} = calculateStreaksAndStats(contributionData, repos);
+			mostCommitProjectCount,
+		} = await calculateStreaksAndStats(contributionData, repos, username);
 
 		// Calculate experience (years since account creation)
 		const accountAge = new Date().getFullYear() - new Date(user.created_at!).getFullYear();
@@ -97,6 +99,7 @@ export async function fetchGitHubStats(
 			mostActiveDate,
 			mostActiveDateCount,
 			mostCommitProject: mostCommitProject || repos[0]?.name || "N/A",
+			mostCommitProjectCount,
 			favouriteProject: mostStarredRepo?.name || "N/A",
 			favouriteProjectStars: mostStarredRepo?.stargazers_count || 0,
 			languages,
@@ -135,9 +138,10 @@ async function fetchContributionData(
 	}
 }
 
-function calculateStreaksAndStats(
+async function calculateStreaksAndStats(
 	contributions: ContributionDay[],
-	repos: any[]
+	repos: any[],
+	username: string
 ) {
 	let currentStreak = 0;
 	let longestStreak = 0;
@@ -226,10 +230,62 @@ function calculateStreaksAndStats(
 		});
 	}
 
-	// Find most committed project (repo with most pushes - approximation using updated repos)
-	const mostCommitProject = repos.filter(r => r.pushed_at).sort((a, b) =>
-		new Date(b.pushed_at!).getTime() - new Date(a.pushed_at!).getTime()
-	)[0]?.name || "N/A";
+	// Find most committed project by fetching commit counts for each repo
+	let mostCommitProject = "N/A";
+	let mostCommitProjectCount = 0;
+
+	try {
+		// Fetch commit counts for top repos (limit to 10 to avoid rate limits)
+		const topRepos = repos.slice(0, 10);
+		const repoCommitCounts = await Promise.all(
+			topRepos.map(async (repo) => {
+				try {
+					const { data: commits } = await octokit.repos.listCommits({
+						owner: username,
+						repo: repo.name,
+						author: username,
+						per_page: 1,
+					});
+
+					// Get the total count from the Link header if available
+					// Otherwise just count what we can fetch (limited approach)
+					const response = await octokit.repos.listCommits({
+						owner: username,
+						repo: repo.name,
+						author: username,
+						per_page: 100,
+					});
+
+					return {
+						name: repo.name,
+						count: response.data.length,
+					};
+				} catch {
+					return { name: repo.name, count: 0 };
+				}
+			})
+		);
+
+		// Find the repo with most commits
+		const maxCommitRepo = repoCommitCounts.reduce((prev, current) =>
+			current.count > prev.count ? current : prev
+		);
+
+		if (maxCommitRepo.count > 0) {
+			mostCommitProject = maxCommitRepo.name;
+			mostCommitProjectCount = maxCommitRepo.count;
+		}
+	} catch (error) {
+		console.error("Error fetching commit counts:", error);
+		// Fallback to most recently pushed repo
+		const fallbackRepo = repos.filter(r => r.pushed_at).sort((a, b) =>
+			new Date(b.pushed_at!).getTime() - new Date(a.pushed_at!).getTime()
+		)[0];
+		if (fallbackRepo) {
+			mostCommitProject = fallbackRepo.name;
+			mostCommitProjectCount = 0;
+		}
+	}
 
 	return {
 		currentStreak,
@@ -240,6 +296,7 @@ function calculateStreaksAndStats(
 		mostActiveDate,
 		mostActiveDateCount,
 		mostCommitProject,
+		mostCommitProjectCount,
 	};
 }
 
@@ -256,6 +313,7 @@ function getFallbackStats(username: string): GitHubStats {
 		mostActiveDate: "N/A",
 		mostActiveDateCount: 0,
 		mostCommitProject: "N/A",
+		mostCommitProjectCount: 0,
 		favouriteProject: "N/A",
 		favouriteProjectStars: 0,
 		languages: [],
