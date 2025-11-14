@@ -1,1 +1,1 @@
-![GitHub Stats](https://divineamunega.vercel.app/api/stats-image)
+![GitHub Stats](https://divineamunega.vercel.app/api/stats-svg)
