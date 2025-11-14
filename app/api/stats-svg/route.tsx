@@ -9,279 +9,227 @@ export async function GET() {
 	try {
 		const stats = await fetchGitHubStats("divineamunega");
 
-		// Create JSX for satori - matches your beautiful design
+		// Sleek black design with experienced dev aesthetic
 		const markup = (
 			<div
 				style={{
 					width: "100%",
 					height: "100%",
 					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					background: "linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%)",
-					padding: "32px",
+					background: "#0a0a0a",
+					padding: "0",
 				}}
 			>
 				<div
 					style={{
 						width: "100%",
-						maxWidth: "832px",
-						background: "rgba(30, 41, 59, 0.5)",
-						borderRadius: "16px",
-						padding: "32px",
-						border: "1px solid rgba(59, 130, 246, 0.3)",
+						background: "linear-gradient(135deg, #000000 0%, #0a0a0a 100%)",
 						display: "flex",
 						flexDirection: "column",
-						gap: "24px",
+						padding: "40px",
+						gap: "28px",
 					}}
 				>
-					{/* Header */}
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							gap: "8px",
-						}}
-					>
-						<div
-							style={{
-								fontSize: "28px",
-								fontWeight: "bold",
-								color: "#60a5fa",
-							}}
-						>
-							{stats.username}@github
-						</div>
-						<div
-							style={{
-								color: "rgba(59, 130, 246, 0.25)",
-								fontSize: "16px",
-							}}
-						>
-							─────────────────────────────────────────────
-						</div>
-					</div>
-
-					{/* Basic Info */}
+					{/* Header - Minimalist */}
 					<div
 						style={{
 							display: "flex",
 							flexDirection: "column",
 							gap: "12px",
+							borderBottom: "2px solid #1a1a1a",
+							paddingBottom: "20px",
 						}}
 					>
-						<div style={{ display: "flex", gap: "8px", fontSize: "16px" }}>
-							<span style={{ color: "#93c5fd" }}>Name:</span>
-							<span style={{ color: "#ffffff" }}>{stats.fullName}</span>
+						<div
+							style={{
+								fontSize: "32px",
+								fontWeight: "700",
+								color: "#ffffff",
+								letterSpacing: "-0.5px",
+							}}
+						>
+							{stats.fullName}
 						</div>
-						<div style={{ display: "flex", gap: "8px", fontSize: "16px" }}>
-							<span style={{ color: "#93c5fd" }}>Experience:</span>
-							<span style={{ color: "#ffffff" }}>{stats.experience}</span>
-						</div>
-						<div style={{ display: "flex", gap: "8px", fontSize: "16px" }}>
-							<span style={{ color: "#93c5fd" }}>Bio:</span>
-							<span style={{ color: "#ffffff" }}>{stats.bio}</span>
+						<div
+							style={{
+								fontSize: "16px",
+								color: "#666666",
+								display: "flex",
+								gap: "16px",
+							}}
+						>
+							<span>@{stats.username}</span>
+							<span>•</span>
+							<span>{stats.experience} experience</span>
 						</div>
 					</div>
 
-					{/* Divider */}
+					{/* Bio */}
 					<div
 						style={{
-							color: "rgba(59, 130, 246, 0.25)",
-							fontSize: "16px",
+							fontSize: "18px",
+							color: "#999999",
+							lineHeight: "1.6",
+							fontStyle: "italic",
 						}}
 					>
-						─────────────────────────────────────────────
+						&ldquo;{stats.bio}&rdquo;
 					</div>
 
-					{/* Commit Activity */}
+					{/* Main Stats Grid */}
 					<div
 						style={{
 							display: "flex",
-							flexDirection: "column",
-							gap: "16px",
+							gap: "20px",
 						}}
 					>
+						{/* Commits */}
 						<div
 							style={{
-								fontSize: "20px",
-								fontWeight: "bold",
-								color: "#67e8f9",
-							}}
-						>
-							📊 Commit Activity
-						</div>
-
-						{/* Stats Cards */}
-						<div style={{ display: "flex", gap: "16px" }}>
-							<div
-								style={{
-									flex: 1,
-									background: "rgba(6, 182, 212, 0.1)",
-									border: "1px solid rgba(6, 182, 212, 0.3)",
-									borderRadius: "12px",
-									padding: "16px",
-									display: "flex",
-									flexDirection: "column",
-									gap: "8px",
-								}}
-							>
-								<div style={{ fontSize: "14px", color: "#67e8f9" }}>
-									Total Commits
-								</div>
-								<div
-									style={{ fontSize: "28px", fontWeight: "bold", color: "#ffffff" }}
-								>
-									{stats.totalCommits}
-								</div>
-							</div>
-							<div
-								style={{
-									flex: 1,
-									background: "rgba(6, 182, 212, 0.1)",
-									border: "1px solid rgba(6, 182, 212, 0.3)",
-									borderRadius: "12px",
-									padding: "16px",
-									display: "flex",
-									flexDirection: "column",
-									gap: "8px",
-								}}
-							>
-								<div style={{ fontSize: "14px", color: "#67e8f9" }}>
-									Total Repos
-								</div>
-								<div
-									style={{ fontSize: "28px", fontWeight: "bold", color: "#ffffff" }}
-								>
-									{stats.totalRepos}
-								</div>
-							</div>
-							<div
-								style={{
-									flex: 1,
-									background: "rgba(234, 179, 8, 0.1)",
-									border: "1px solid rgba(234, 179, 8, 0.3)",
-									borderRadius: "12px",
-									padding: "16px",
-									display: "flex",
-									flexDirection: "column",
-									gap: "8px",
-								}}
-							>
-								<div style={{ fontSize: "14px", color: "#fcd34d" }}>
-									⭐ Total Stars
-								</div>
-								<div
-									style={{ fontSize: "28px", fontWeight: "bold", color: "#ffffff" }}
-								>
-									{stats.totalStars}
-								</div>
-							</div>
-						</div>
-
-						{/* Streak Cards */}
-						<div style={{ display: "flex", gap: "16px" }}>
-							<div
-								style={{
-									flex: 1,
-									background: "rgba(16, 185, 129, 0.1)",
-									border: "1px solid rgba(16, 185, 129, 0.3)",
-									borderRadius: "12px",
-									padding: "16px",
-									display: "flex",
-									flexDirection: "column",
-									gap: "8px",
-								}}
-							>
-								<div style={{ fontSize: "14px", color: "#6ee7b7" }}>
-									🔥 Current Streak
-								</div>
-								<div
-									style={{ fontSize: "28px", fontWeight: "bold", color: "#ffffff" }}
-								>
-									{stats.currentStreak}
-								</div>
-							</div>
-							<div
-								style={{
-									flex: 1,
-									background: "rgba(16, 185, 129, 0.1)",
-									border: "1px solid rgba(16, 185, 129, 0.3)",
-									borderRadius: "12px",
-									padding: "16px",
-									display: "flex",
-									flexDirection: "column",
-									gap: "8px",
-								}}
-							>
-								<div style={{ fontSize: "14px", color: "#6ee7b7" }}>
-									📈 Longest Streak
-								</div>
-								<div
-									style={{ fontSize: "28px", fontWeight: "bold", color: "#ffffff" }}
-								>
-									{stats.longestStreak}
-								</div>
-							</div>
-						</div>
-
-						{/* Activity Patterns */}
-						<div
-							style={{
-								background:
-									"linear-gradient(90deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%)",
-								border: "1px solid rgba(139, 92, 246, 0.3)",
-								borderRadius: "12px",
-								padding: "16px",
+								flex: 1,
+								background: "#111111",
+								border: "1px solid #1f1f1f",
+								borderRadius: "8px",
+								padding: "24px",
 								display: "flex",
 								flexDirection: "column",
 								gap: "12px",
 							}}
 						>
-							<div style={{ fontSize: "14px", color: "#c4b5fd" }}>
-								📅 Activity Patterns
+							<div style={{ fontSize: "13px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
+								COMMITS
 							</div>
-							<div style={{ display: "flex", gap: "32px" }}>
-								<div
-									style={{
-										display: "flex",
-										flexDirection: "column",
-										gap: "4px",
-									}}
-								>
-									<div style={{ fontSize: "12px", color: "#ddd6fe" }}>
-										Most Active Day
-									</div>
-									<div style={{ fontSize: "14px", color: "#ffffff" }}>
-										{stats.mostCommitDay} ({stats.mostCommitDayCount})
-									</div>
-								</div>
-								<div
-									style={{
-										display: "flex",
-										flexDirection: "column",
-										gap: "4px",
-									}}
-								>
-									<div style={{ fontSize: "12px", color: "#fbcfe8" }}>
-										Most Active Date
-									</div>
-									<div style={{ fontSize: "14px", color: "#ffffff" }}>
-										{stats.mostActiveDate.substring(0, 25)}
-									</div>
-								</div>
+							<div style={{ fontSize: "36px", fontWeight: "700", color: "#ffffff" }}>
+								{stats.totalCommits}
+							</div>
+						</div>
+
+						{/* Repos */}
+						<div
+							style={{
+								flex: 1,
+								background: "#111111",
+								border: "1px solid #1f1f1f",
+								borderRadius: "8px",
+								padding: "24px",
+								display: "flex",
+								flexDirection: "column",
+								gap: "12px",
+							}}
+						>
+							<div style={{ fontSize: "13px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
+								REPOS
+							</div>
+							<div style={{ fontSize: "36px", fontWeight: "700", color: "#ffffff" }}>
+								{stats.totalRepos}
+							</div>
+						</div>
+
+						{/* Stars */}
+						<div
+							style={{
+								flex: 1,
+								background: "#111111",
+								border: "1px solid #1f1f1f",
+								borderRadius: "8px",
+								padding: "24px",
+								display: "flex",
+								flexDirection: "column",
+								gap: "12px",
+							}}
+						>
+							<div style={{ fontSize: "13px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
+								STARS
+							</div>
+							<div style={{ fontSize: "36px", fontWeight: "700", color: "#ffffff" }}>
+								{stats.totalStars}
 							</div>
 						</div>
 					</div>
 
-					{/* Divider */}
+					{/* Streaks */}
 					<div
 						style={{
-							color: "rgba(59, 130, 246, 0.25)",
-							fontSize: "16px",
+							display: "flex",
+							gap: "20px",
 						}}
 					>
-						─────────────────────────────────────────────
+						<div
+							style={{
+								flex: 1,
+								background: "linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%)",
+								border: "1px solid #2a2a2a",
+								borderRadius: "8px",
+								padding: "24px",
+								display: "flex",
+								flexDirection: "column",
+								gap: "8px",
+							}}
+						>
+							<div style={{ fontSize: "13px", color: "#888888" }}>
+								🔥 Current Streak
+							</div>
+							<div style={{ fontSize: "32px", fontWeight: "700", color: "#ffffff" }}>
+								{stats.currentStreak}
+							</div>
+						</div>
+
+						<div
+							style={{
+								flex: 1,
+								background: "linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%)",
+								border: "1px solid #2a2a2a",
+								borderRadius: "8px",
+								padding: "24px",
+								display: "flex",
+								flexDirection: "column",
+								gap: "8px",
+							}}
+						>
+							<div style={{ fontSize: "13px", color: "#888888" }}>
+								📈 Longest Streak
+							</div>
+							<div style={{ fontSize: "32px", fontWeight: "700", color: "#ffffff" }}>
+								{stats.longestStreak}
+							</div>
+						</div>
+					</div>
+
+					{/* Activity Insights */}
+					<div
+						style={{
+							background: "#0d0d0d",
+							border: "1px solid #1a1a1a",
+							borderRadius: "8px",
+							padding: "24px",
+							display: "flex",
+							flexDirection: "column",
+							gap: "16px",
+						}}
+					>
+						<div style={{ fontSize: "14px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
+							ACTIVITY INSIGHTS
+						</div>
+						<div style={{ display: "flex", gap: "40px" }}>
+							<div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+								<div style={{ fontSize: "13px", color: "#888888" }}>Most Active Day</div>
+								<div style={{ fontSize: "16px", color: "#ffffff", fontWeight: "600" }}>
+									{stats.mostCommitDay}
+								</div>
+								<div style={{ fontSize: "12px", color: "#555555" }}>
+									{stats.mostCommitDayCount} commits
+								</div>
+							</div>
+							<div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+								<div style={{ fontSize: "13px", color: "#888888" }}>Peak Date</div>
+								<div style={{ fontSize: "16px", color: "#ffffff", fontWeight: "600" }}>
+									{stats.mostActiveDate.split(',')[0]}
+								</div>
+								<div style={{ fontSize: "12px", color: "#555555" }}>
+									{stats.mostActiveDateCount} commits
+								</div>
+							</div>
+						</div>
 					</div>
 
 					{/* Notable Projects */}
@@ -289,38 +237,51 @@ export async function GET() {
 						style={{
 							display: "flex",
 							flexDirection: "column",
-							gap: "12px",
+							gap: "16px",
 						}}
 					>
-						<div
-							style={{
-								fontSize: "20px",
-								fontWeight: "bold",
-								color: "#7dd3fc",
-							}}
-						>
-							💻 Notable Projects
+						<div style={{ fontSize: "14px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
+							NOTABLE PROJECTS
 						</div>
-						<div style={{ display: "flex", gap: "8px", fontSize: "16px" }}>
-							<span style={{ color: "#7dd3fc" }}>Most Commits:</span>
-							<span style={{ color: "#ffffff" }}>{stats.mostCommitProject}</span>
+						<div style={{ display: "flex", gap: "20px" }}>
+							<div
+								style={{
+									flex: 1,
+									background: "#0d0d0d",
+									border: "1px solid #1a1a1a",
+									borderRadius: "6px",
+									padding: "16px",
+									display: "flex",
+									flexDirection: "column",
+									gap: "8px",
+								}}
+							>
+								<div style={{ fontSize: "12px", color: "#777777" }}>Most Commits</div>
+								<div style={{ fontSize: "16px", color: "#ffffff", fontWeight: "600" }}>
+									{stats.mostCommitProject}
+								</div>
+							</div>
+							<div
+								style={{
+									flex: 1,
+									background: "#0d0d0d",
+									border: "1px solid #1a1a1a",
+									borderRadius: "6px",
+									padding: "16px",
+									display: "flex",
+									flexDirection: "column",
+									gap: "8px",
+								}}
+							>
+								<div style={{ fontSize: "12px", color: "#777777" }}>⭐ Fan Favorite</div>
+								<div style={{ fontSize: "16px", color: "#ffffff", fontWeight: "600" }}>
+									{stats.favouriteProject}
+								</div>
+								<div style={{ fontSize: "12px", color: "#555555" }}>
+									{stats.favouriteProjectStars} stars
+								</div>
+							</div>
 						</div>
-						<div style={{ display: "flex", gap: "8px", fontSize: "16px" }}>
-							<span style={{ color: "#fcd34d" }}>⭐ Favourite:</span>
-							<span style={{ color: "#ffffff" }}>
-								{stats.favouriteProject} ({stats.favouriteProjectStars} stars)
-							</span>
-						</div>
-					</div>
-
-					{/* Divider */}
-					<div
-						style={{
-							color: "rgba(59, 130, 246, 0.25)",
-							fontSize: "16px",
-						}}
-					>
-						─────────────────────────────────────────────
 					</div>
 
 					{/* Tech Stack */}
@@ -328,29 +289,24 @@ export async function GET() {
 						style={{
 							display: "flex",
 							flexDirection: "column",
-							gap: "12px",
+							gap: "16px",
 						}}
 					>
-						<div
-							style={{
-								fontSize: "20px",
-								fontWeight: "bold",
-								color: "#93c5fd",
-							}}
-						>
-							🔧 Tech Stack
+						<div style={{ fontSize: "14px", color: "#666666", textTransform: "uppercase", letterSpacing: "1px" }}>
+							TECH STACK
 						</div>
-						<div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+						<div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
 							{stats.languages.map((lang, idx) => (
 								<div
 									key={idx}
 									style={{
-										background: "rgba(59, 130, 246, 0.2)",
-										border: "1px solid rgba(96, 165, 250, 0.3)",
+										background: "#111111",
+										border: "1px solid #1f1f1f",
 										borderRadius: "6px",
-										padding: "8px 12px",
+										padding: "10px 16px",
 										fontSize: "14px",
-										color: "#bfdbfe",
+										color: "#cccccc",
+										fontWeight: "500",
 									}}
 								>
 									{lang}
@@ -363,22 +319,23 @@ export async function GET() {
 					<div
 						style={{
 							display: "flex",
-							justifyContent: "center",
+							justifyContent: "space-between",
+							paddingTop: "20px",
+							borderTop: "1px solid #1a1a1a",
 							fontSize: "12px",
-							color: "#94a3b8",
-							paddingTop: "8px",
-							borderTop: "1px solid rgba(59, 130, 246, 0.2)",
+							color: "#444444",
 						}}
 					>
-						Building with passion • Last updated: {new Date().toLocaleDateString()}
+						<span>github.com/{stats.username}</span>
+						<span>Updated {new Date().toLocaleDateString()}</span>
 					</div>
 				</div>
 			</div>
 		);
 
 		const svg = await satori(markup, {
-			width: 896,
-			height: 1200,
+			width: 800,
+			height: 1100,
 			fonts: [
 				{
 					name: "Inter",
@@ -392,6 +349,14 @@ export async function GET() {
 					name: "Inter",
 					data: await fetch(
 						"https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiA.woff"
+					).then((res) => res.arrayBuffer()),
+					weight: 600,
+					style: "normal",
+				},
+				{
+					name: "Inter",
+					data: await fetch(
+						"https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff"
 					).then((res) => res.arrayBuffer()),
 					weight: 700,
 					style: "normal",
@@ -412,9 +377,9 @@ export async function GET() {
 		console.error("Error generating SVG stats:", error);
 
 		const errorSvg = `
-<svg width="896" height="200" xmlns="http://www.w3.org/2000/svg">
-  <rect width="896" height="200" fill="#1e293b"/>
-  <text x="448" y="100" text-anchor="middle" font-family="system-ui" font-size="18" fill="#ef4444">
+<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="200" fill="#0a0a0a"/>
+  <text x="400" y="100" text-anchor="middle" font-family="system-ui" font-size="16" fill="#666666">
     Failed to generate stats: ${(error as Error).message}
   </text>
 </svg>
