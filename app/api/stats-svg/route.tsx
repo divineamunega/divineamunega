@@ -9,7 +9,7 @@ export async function GET() {
 		const stats = await fetchGitHubStats("divineamunega");
 
 		// Generate SVG directly - adjust height based on whether WakaTime is available
-		const svgHeight = stats.wakatime ? 1300 : 1100;
+		const svgHeight = stats.wakatime ? 1350 : 1100;
 		const svg = `
 <svg width="800" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -95,35 +95,35 @@ export async function GET() {
 	}).join('\n  ')}
 
   ${stats.wakatime ? `
-  <!-- WakaTime Stats (Last 7 Days) -->
-  <text x="40" y="975" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#666666" letter-spacing="1">WAKATIME STATS (LAST 7 DAYS)</text>
+  <!-- WakaTime Stats (All Time) -->
+  <text x="40" y="975" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#666666" letter-spacing="1">WAKATIME STATS</text>
 
-  <rect x="40" y="995" width="720" height="180" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1"/>
+  <rect x="40" y="995" width="720" height="220" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1"/>
 
-  <!-- Daily Average & Total Hours -->
-  <text x="64" y="1025" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Daily Average</text>
-  <text x="64" y="1055" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${stats.wakatime.dailyAverage}</text>
+  <!-- Total Hours & Last 7 Days -->
+  <text x="64" y="1025" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Total Hours (All Time)</text>
+  <text x="64" y="1055" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${stats.wakatime.totalHours}</text>
 
-  <text x="264" y="1025" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Total Coding Time</text>
-  <text x="264" y="1055" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${stats.wakatime.totalHours}</text>
+  <text x="290" y="1025" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Last 7 Days</text>
+  <text x="290" y="1055" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${stats.wakatime.last7DaysTotal}</text>
 
-  <text x="490" y="1025" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Best Day</text>
-  <text x="490" y="1055" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${stats.wakatime.bestDay}</text>
+  <text x="490" y="1025" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Top OS</text>
+  <text x="490" y="1055" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${stats.wakatime.topOS}</text>
 
-  <!-- Top Language & Editors -->
+  <!-- Favorite Languages -->
   <line x1="64" y1="1085" x2="736" y2="1085" stroke="#1a1a1a" stroke-width="1"/>
 
-  <text x="64" y="1110" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Top Language</text>
-  <text x="64" y="1140" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#ffffff">${stats.wakatime.topLanguage} <tspan fill="#666666">${stats.wakatime.topLanguagePercent}</tspan></text>
+  <text x="64" y="1110" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Favorite Languages (All Time)</text>
 
-  <text x="400" y="1110" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#888888">Editors Used</text>
-  <text x="400" y="1140" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#ffffff">${stats.wakatime.editors.join(', ') || 'N/A'}</text>
+  <text x="64" y="1145" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#ffffff">1. ${stats.wakatime.topLanguage} <tspan fill="#666666">${stats.wakatime.topLanguageTime}</tspan></text>
+
+  <text x="64" y="1180" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#ffffff">2. ${stats.wakatime.secondLanguage} <tspan fill="#666666">${stats.wakatime.secondLanguageTime}</tspan></text>
   ` : ''}
 
   <!-- Footer -->
-  <line x1="40" y1="${stats.wakatime ? 1220 : 1020}" x2="760" y2="${stats.wakatime ? 1220 : 1020}" stroke="#1a1a1a" stroke-width="1"/>
-  <text x="40" y="${stats.wakatime ? 1250 : 1050}" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444">github.com/${stats.username}</text>
-  <text x="760" y="${stats.wakatime ? 1250 : 1050}" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444" text-anchor="end">Updated ${new Date().toLocaleDateString()}</text>
+  <line x1="40" y1="${stats.wakatime ? 1260 : 1020}" x2="760" y2="${stats.wakatime ? 1260 : 1020}" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="40" y="${stats.wakatime ? 1290 : 1050}" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444">github.com/${stats.username}</text>
+  <text x="760" y="${stats.wakatime ? 1290 : 1050}" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#444444" text-anchor="end">Updated ${new Date().toLocaleDateString()}</text>
 </svg>
     `.trim();
 

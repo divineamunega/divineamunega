@@ -1,5 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import axios from "axios";
+import { Agent as HttpsAgent } from "https";
 
 export interface GitHubStats {
 	username: string;
@@ -26,12 +27,13 @@ export interface GitHubStats {
 }
 
 export interface WakaTimeStats {
-	dailyAverage: string;
-	totalHours: string;
-	topLanguage: string;
-	topLanguagePercent: string;
-	editors: string[];
-	bestDay: string;
+	totalHours: string; // All-time total hours
+	last7DaysTotal: string; // Last 7 days total
+	topLanguage: string; // Top language name
+	topLanguageTime: string; // Top language time
+	secondLanguage: string; // Second language name
+	secondLanguageTime: string; // Second language time
+	topOS: string; // Top operating system
 }
 
 interface ContributionDay {
@@ -147,53 +149,74 @@ async function fetchWakaTimeStats(
 	}
 
 	try {
-		const response = await axios.get(
-			`https://wakatime.com/api/v1/users/current/stats/last_7_days`,
-			{
-				params: { api_key: apiKey },
-				timeout: 10000,
-			}
+		// Create a custom HTTPS agent with IPv4 preference to avoid connection issues
+		const httpsAgent = new HttpsAgent({
+			family: 4, // Force IPv4 to avoid IPv6 timeout issues
+			keepAlive: true,
+		});
+
+		const axiosConfig = {
+			params: { api_key: apiKey },
+			httpsAgent: httpsAgent,
+			timeout: 30000,
+			headers: {
+				"User-Agent": "Mozilla/5.0 (compatible; Node.js)",
+				Accept: "application/json",
+			},
+		};
+
+		// Fetch all-time stats
+		const allTimeResponse = await axios.get(
+			`https://wakatime.com/api/v1/users/current/stats/all_time`,
+			axiosConfig
 		);
 
-		if (!response.data || !response.data.data) {
+		// Fetch last 7 days stats
+		const last7DaysResponse = await axios.get(
+			`https://wakatime.com/api/v1/users/current/stats/last_7_days`,
+			axiosConfig
+		);
+
+		if (
+			!allTimeResponse.data ||
+			!allTimeResponse.data.data ||
+			!last7DaysResponse.data ||
+			!last7DaysResponse.data.data
+		) {
 			return undefined;
 		}
 
-		const stats = response.data.data;
+		const allTimeStats = allTimeResponse.data.data;
+		const last7DaysStats = last7DaysResponse.data.data;
 
-		// Get daily average in hours
-		const dailyAverage = (
-			stats.daily_average_including_other_language / 3600
-		).toFixed(1);
-
-		// Get total hours
+		// Get all-time total hours
 		const totalHours = (
-			stats.total_seconds_including_other_language / 3600
+			allTimeStats.total_seconds_including_other_language / 3600
+		).toFixed(0);
+
+		// Get last 7 days total
+		const last7DaysTotal = (
+			last7DaysStats.total_seconds_including_other_language / 3600
 		).toFixed(1);
 
-		// Get top language
-		const topLanguage = stats.languages?.[0]?.name || "N/A";
-		const topLanguagePercent = stats.languages?.[0]?.percent?.toFixed(1) || "0";
+		// Get top 2 languages from all-time stats
+		const topLanguage = allTimeStats.languages?.[0]?.name || "N/A";
+		const topLanguageTime = allTimeStats.languages?.[0]?.text || "N/A";
 
-		// Get editors
-		const editors = stats.editors?.slice(0, 3).map((e: any) => e.name) || [];
+		const secondLanguage = allTimeStats.languages?.[1]?.name || "N/A";
+		const secondLanguageTime = allTimeStats.languages?.[1]?.text || "N/A";
 
-		// Get best day
-		const bestDayData = stats.best_day;
-		const bestDay = bestDayData
-			? new Date(bestDayData.date).toLocaleDateString("en-US", {
-					month: "short",
-					day: "numeric",
-			  })
-			: "N/A";
+		// Get top OS
+		const topOS = allTimeStats.operating_systems?.[0]?.name || "N/A";
 
 		return {
-			dailyAverage: `${dailyAverage} hrs`,
 			totalHours: `${totalHours} hrs`,
+			last7DaysTotal: `${last7DaysTotal} hrs`,
 			topLanguage,
-			topLanguagePercent: `${topLanguagePercent}%`,
-			editors,
-			bestDay,
+			topLanguageTime,
+			secondLanguage,
+			secondLanguageTime,
+			topOS,
 		};
 	} catch (error) {
 		// Silently fail - WakaTime stats are optional
