@@ -19,7 +19,7 @@ jobs:
           # Replace with your actual Vercel URL after deployment
           URL="https://divineamunega.vercel.app/api/stats-image"
 
-          # Send GET request and follow redirects
+          # Send GET request and follow redirects yes
           response=$(curl -L -w "\n%{http_code}" -s "$URL" -o /dev/null)
           http_code=$(echo "$response" | tail -n1)
 
