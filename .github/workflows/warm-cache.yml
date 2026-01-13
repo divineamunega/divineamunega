@@ -2,9 +2,9 @@ name: Warm Image Cache
 
 on:
   schedule:
-    # Run daily at 00:00 UTC (adjust to your preferred time)
+    # Run every 30 minutes to keep the SVG cache warm
     # Format: minute hour day month day-of-week
-    - cron: "0 0 * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch: # Allow manual trigger
 
 jobs:
@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send GET request to stats image endpoint
+      - name: Send GET request to stats SVG endpoint
         run: |
           echo "🔥 Warming cache for stats image..."
 
           # Replace with your actual Vercel URL after deployment
-          URL="https://divineamunega.vercel.app/api/stats-image"
+          URL="https://divineamunega.vercel.app/api/stats-svg"
 
           # Send GET request and follow redirects yes
           response=$(curl -L -w "\n%{http_code}" -s "$URL" -o /dev/null)
