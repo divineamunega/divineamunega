@@ -17,6 +17,16 @@ The profile view counter is already set up! It uses an in-memory counter that in
 - **PostgreSQL**
 - External services like [CountAPI](https://countapi.xyz/) or [hits.sh](https://hits.sh/)
 
+### 1b. Redis Caching (Optional)
+
+To speed up GitHub image loads, you can enable server-side caching and persistent view counts with Redis.
+
+1. Provision a Redis instance (Upstash, Redis Cloud, self-hosted, etc).
+2. Add this environment variable in Vercel:
+   - `REDIS_URL`
+
+With Redis configured, stats responses are cached for 1 hour and views persist across restarts.
+
 ### 2. WakaTime Integration
 
 #### Step 1: Get Your WakaTime API Key

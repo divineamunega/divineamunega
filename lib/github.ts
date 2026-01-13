@@ -46,13 +46,72 @@ const octokit = new Octokit({
 });
 
 // Simple in-memory profile view counter (resets on server restart)
-// For production, use a database or external service
 let profileViewCount = 0;
 
+type RedisClient = {
+	get: (key: string) => Promise<string | null>;
+	set: (key: string, value: string, mode?: "EX", ttlSeconds?: number) => Promise<unknown>;
+	incr: (key: string) => Promise<number>;
+};
+
+let redisClientPromise: Promise<RedisClient | null> | null = null;
+
+async function getRedisClient(): Promise<RedisClient | null> {
+	if (redisClientPromise) {
+		return redisClientPromise;
+	}
+
+	redisClientPromise = (async () => {
+		const redisUrl = process.env.REDIS_URL;
+		if (!redisUrl) {
+			return null;
+		}
+
+		try {
+			const { default: Redis } = await import("ioredis");
+			return new Redis(redisUrl) as unknown as RedisClient;
+		} catch (error) {
+			console.warn("Redis not available:", error);
+			return null;
+		}
+	})();
+
+	return redisClientPromise;
+}
+
+async function incrementProfileViews(
+	redisClient: RedisClient | null,
+	username: string
+): Promise<number> {
+	if (redisClient) {
+		try {
+			return await redisClient.incr(`profile_views:${username}`);
+		} catch {
+			// Fall back to in-memory count.
+		}
+	}
+
+	profileViewCount += 1;
+	return profileViewCount;
+}
+
 export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
+	const redisClient = await getRedisClient();
+	const profileViewsCount = await incrementProfileViews(redisClient, username);
+	const profileViews = profileViewsCount.toLocaleString();
+
 	try {
-		// Increment profile view counter
-		profileViewCount++;
+		if (redisClient) {
+			const cachedRaw = await redisClient.get(`github_stats:${username}`);
+			if (cachedRaw) {
+				const cached = JSON.parse(cachedRaw) as GitHubStats;
+				return {
+					...cached,
+					profileViews,
+				};
+			}
+		}
+
 		// Fetch user data
 		const { data: user } = await octokit.users.getByUsername({ username });
 
@@ -109,7 +168,7 @@ export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
 		// Fetch WakaTime stats if API key is available
 		const wakatime = await fetchWakaTimeStats(username);
 
-		return {
+		const stats = {
 			username: user.login,
 			fullName: user.name || user.login,
 			bio: user.bio || "No bio available",
@@ -129,13 +188,24 @@ export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
 			totalRepos: user.public_repos.toString(),
 			totalStars: totalStars.toLocaleString(),
 			contributionsThisYear: totalContributions.toLocaleString(),
-			profileViews: profileViewCount.toLocaleString(),
+			profileViews,
 			wakatime,
 		};
+
+		if (redisClient) {
+			await redisClient.set(
+				`github_stats:${username}`,
+				JSON.stringify(stats),
+				"EX",
+				3600
+			);
+		}
+
+		return stats;
 	} catch (error) {
 		console.error("Error fetching GitHub stats:", error);
 		// Return fallback data
-		return getFallbackStats(username);
+		return getFallbackStats(username, profileViews);
 	}
 }
 
@@ -423,8 +493,7 @@ async function calculateStreaksAndStats(
 	};
 }
 
-function getFallbackStats(username: string): GitHubStats {
-	profileViewCount++;
+function getFallbackStats(username: string, profileViews: string): GitHubStats {
 	return {
 		username,
 		fullName: username,
@@ -445,7 +514,7 @@ function getFallbackStats(username: string): GitHubStats {
 		totalRepos: "N/A",
 		totalStars: "N/A",
 		contributionsThisYear: "N/A",
-		profileViews: profileViewCount.toLocaleString(),
+		profileViews,
 		wakatime: undefined,
 	};
 }
