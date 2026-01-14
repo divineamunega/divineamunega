@@ -50,7 +50,12 @@ let profileViewCount = 0;
 
 type RedisClient = {
 	get: (key: string) => Promise<string | null>;
-	set: (key: string, value: string, mode?: "EX", ttlSeconds?: number) => Promise<unknown>;
+	set: (
+		key: string,
+		value: string,
+		mode?: "EX",
+		ttlSeconds?: number
+	) => Promise<unknown>;
 	incr: (key: string) => Promise<number>;
 };
 

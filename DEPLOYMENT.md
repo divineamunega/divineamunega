@@ -16,11 +16,11 @@
    After deployment, Vercel will provide a URL like: `https://your-project-name.vercel.app`
 
 4. **Update README.md**:
-   Replace `https://your-app-name.vercel.app/api/stats-image` with your actual Vercel deployment URL.
+   Replace `https://your-app-name.vercel.app/api/stats-svg` with your actual Vercel deployment URL.
 
    Example:
    ```markdown
-   ![GitHub Stats](https://divineamunega.vercel.app/api/stats-image)
+   ![GitHub Stats](https://divineamunega.vercel.app/api/stats-svg)
    ```
 
 5. **Set Environment Variables on Vercel**:
@@ -39,7 +39,7 @@
 
 ## How It Works
 
-- The `/api/stats-image` endpoint dynamically generates a screenshot of your stats page using Puppeteer
+- The `/api/stats-svg` endpoint dynamically generates an SVG of your stats
 - Images are cached for 1 hour (3600 seconds) by CDNs
 - A GitHub Action runs daily at 00:00 UTC to warm the cache (optional but recommended)
 - First load takes ~15-20 seconds, subsequent loads are instant (cached)
