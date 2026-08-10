@@ -11,8 +11,7 @@ I am a Full-Stack Software Engineer focused on building deterministic user inter
 ```typescript
 const engineer = {
   frontend:  ["React", "Next.js", "TypeScript", "Astro", "TailwindCSS"],
-  backend:   ["Node.js", "Express", "Prisma", "Drizzle ORM"],
-  caching:   ["Redis"],
+  backend:   ["Node.js", "NestJS", "Postgresql" ],
   runtime:   ["Bun", "Node"],
-  os:        ["Fedora Linux", "Pop!_OS"]
+  os:        ["Fedora", "Pop!_OS", ]
 };
