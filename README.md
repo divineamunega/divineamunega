@@ -1,4 +1,4 @@
-# Hi, I'm Divine 👋
+# Hi, I'm Divinne 👋
 
 > "We shape our tools, and thereafter our tools shape us."
 
