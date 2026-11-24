@@ -13,20 +13,6 @@ Software engineer in Lagos building backend and AI-integrated systems in TypeScr
 
 - 🎤 **[AI Routers Explained (and Built): The Gateway Between You and the Model](https://sessionize.com/s/divinne/ai-routers-explained-and-built-the-gateway-between/154911)**, DevFest Ajah, December 2025. A live TypeScript build of a router that classifies intent, filters sensitive data, and sends each request to the right model.
 
-### Stack
-
-```typescript
-const engineer = {
-  languages: ["TypeScript", "JavaScript"],
-  backend:   ["Node.js", "NestJS", "BullMQ"],
-  data:      ["PostgreSQL", "Redis"],
-  infra:     ["Docker", "Cloudflare Workers"],
-  frontend:  ["React", "Next.js", "Astro", "Tailwind CSS"],
-  runtime:   ["Node", "Bun"],
-  os:        ["Fedora", "Pop!_OS"],
-};
-```
-
 ### Find me
 
 [Portfolio](https://folio.divinne.workers.dev) · [X](https://x.com/divv_dev) · [LinkedIn](https://linkedin.com/in/divinne) · [Sessionize](https://sessionize.com/divinne)
